@@ -1,0 +1,249 @@
+/*线性表*/
+
+void unionL(List *La,List Lb){
+     int La_len,Lb_len,i;
+	 ElemType e;
+	 La_len = ListLength(*La);
+	 Lb_len = ListLength(Lb);
+	 for(i = 0;i < Lb_len;i++){
+	    GetElem(Lb,i,&e);
+		if(!LocateElem(*La,e))
+			ListInsert(La,++La_len,e);
+	 }
+}
+
+/*线性表的顺序存储结构*/
+
+#define MAXSIZE 20
+typedef int ElemType;
+typedef struct{
+   ElemType data[MAXSIZE];
+   int length;
+}SqList;
+//获取元素
+#define OK 1
+#define ERROR 0
+#define TRUE 1
+#define FALSE 0
+typedef int Status;
+Status GetElem(SqList L,int i,ElemType *e){
+    if(L.length == 0 || i < 1 || i > L.length)
+		return ERROR;
+	*e = L.data[i - 1];
+	return OK;
+
+}
+//插入元素
+Status ListInsert(SqList *L,int i,ElemType e){
+     if(L->length == MAXSIZE || i < 1 || i > L->length + 1)
+		 return ERROR;
+     if(i <= L->length){
+	    for(k = L->length - 1;k >= i-1;k--){
+		    L->data[k + 1] = L->data[k];
+		}
+	 }
+	 L->data[i - 1] = e;
+	 L->length ++;
+	 return OK;
+}
+//删除元素
+Status ListDelete(SqList *L,int i,ElemType *e){
+       int k;
+	   if(L->length == 0)
+		   return ERROR;
+	   if(i < 1 || i > L->length)
+		   return ERROR;
+	   *e = L->data[i - 1];
+	   if(i < L->length){
+	      for(k = i;k < L->length;k++)
+			  L->data[k - 1] = L->data[k];
+	   }
+	   L->length --;
+	   return OK;
+}
+
+/*链式存储结构*/
+typedef struct Node{
+	ElemType data;
+	struct Node *next;
+
+}Node;
+typedef struct Node *LinkList; 
+//获取链表的数据元素
+Status GetElem(LiskList L,int i,ElemType *e){
+     int j;
+	 LinkList p;
+	 p = L->next;
+	 j = 1;
+	 while(p && j < i){
+	     p = p -> next;
+		 ++j;
+	 }
+	 if(!p || j > i)
+		 return ERROR;
+	 *e = p->data;
+	 return OK;
+}
+//插入元素
+Status ListInsert(LinkList *L,int i,ElenType e){
+     int j;
+	 LinkList p,s;
+	 p = *L;
+	 j = 1;
+	 while(p && j < i){
+	   p = p -> next;
+	   ++j;
+	 }
+	 if(!p || j > i)
+		return ERROR;
+
+	 s = (LinkList)malloc(sizeof(Node));
+	 s -> data = e;
+	 s -> next = p -> next;
+	 p -> next = s;
+	 return OK;
+}
+//删除元素
+Status ListDelete(LinkList *L,int i,ElemType *e){
+    int j;
+	LinkList p,q;
+	p = *L;
+	j = 1;
+	while(p -> next && j < i){
+	    p = p -> next;
+		++j;
+	}
+	if(!(p -> next) || j > i)
+		return ERROR;
+	q = p -> next;
+	p -> next = q -> next;
+	*e = q -> data;
+	free(q);
+	return OK;
+}
+/*单链表整表的创建*/
+//头插法
+void GreatListHead(LinkList *L,int n){
+    LinkList p;
+	int i;
+	srand(time(0));/*初始化随机数种子*/
+	*L = (LinkList)malloc(sizeof(Node));
+	for(i = 0;i < n;i++){
+	   p = (LinkList)malloc(sizeof(Node));
+	   p -> data = rand()%100 + 1;/*随机生成100以内的数字*/
+	   p -> next = (*L) -> next;
+	   (*L) -> next = p;
+	}
+}
+//尾插法
+void GreatListTail(LinkList *L,int n){
+      LinkList p,r;
+	  int i;
+	  srand(time(0));
+	  *L = (LinkList)malloc(sizeof(Node));
+	  r = *L;   //r为指向尾部的结点
+	  for(i = 0;i < n;i++){
+	    p = (Node*)malloc(sizeof(Node));
+		p -> data = rand()%100 + 1;
+		r -> next = p;
+		r = p;
+	  }
+	  r -> next =NULL;
+}
+/*单链表的整表删除*/
+Status ClearList(LinkList *L){
+     LinkList p,q;
+	 p = (*L) -> next;
+	 while(p){
+	  q = p -> next;
+	  free(p);
+	  p = q;
+	 }
+	 (*L) -> next = NULL;
+	 return OK;
+}
+/*数组描述的链表叫做静态链表，又叫做游标实现*/
+#define MAXSIZE 1000
+typedef struct{
+    ElemType data;
+	int cur;
+}Component,StaticLinkList[MAXSIZE];
+//数组第一个元素，即下标为0的元素的cur就存放备用链表的第一个结点的下标；
+//而数组的最后一个元素的cur则存放第一个有数值的元素的下标，相当于单链表的头结点作用
+Status InitList(StaticLinkList space){
+        int i;
+		for(i = 0;i < MAXSIZE - 1;i++)
+			space[i].cur = i + 1;
+		space[MAXSIZE - 1].cur = 0;
+		return OK;
+}
+int Malloc_SLL(StaticLinkList space){//为了辨明数组中哪些分量为被使用
+	int i = space[0].cur;
+	if(space[0].cur)
+		space[0].cur = space[i].cur;
+	return i;
+
+}
+
+Status ListInsert(StaticLinkList L,int i,ElemType e){
+     int j,k,l;
+	 k = MAX_SIZE - 1;
+	 if(i < 1 || i > ListLength(L) + 1)
+		 return ERROR;
+     j = Malloc_SSL(L);
+	 if(j){
+	   L[j].data = e;
+	   for(l = 1;l <= i - 1;l++)
+		   k = L[k].cur;
+	   L[j].cur = L[k].cur;
+	   L[k].cur = j;
+	   return OK;
+	 }
+	 return ERROR;
+
+}
+
+Status ListDelete(StaticLinkList L,int i){
+      int j,k;
+	  if(i < 1 || i > ListLength(L))
+		  return ERROR;
+	  k = MAX_SIZE - 1;
+	  for(j = 1;j <= i - 1;j++)
+		  k = L[k].cur;
+	  j = L[k].cur;
+	  L[k].cur = L[j].cur;
+	  Free_SSL(L,j);
+	  return OK;
+
+}
+
+void Free_SSL(StaticLinkList space,int k){
+    space[k].cur = space[0].cur;
+	space[0].cur = k;
+}
+
+int ListLength(StaticLinkList L){
+    int j = 0;
+	int i = L[MAXSIZE - 1].cur;
+	while(i){
+	i = L[i].cur;
+	j++;
+	}
+	return j;
+}
+
+/*双向链表*/
+typedef struct DulNode{
+  ElemType data;
+  struct DulNode *prior;/*直接前驱指针*/
+  struct DulNode *next;
+}DulNode,*DuLinkList;
+//插入操作:先搞定s的前驱和后继，再搞定后继点的前驱，最后解决前结点的后继
+s -> prior = p;
+s -> next = p -> next;
+p -> next -> prior = s;
+p -> next = s;
+
+//删除操作
+p -> prior -> next = p -> next;
+p -> next -> prior = p -> prior;
