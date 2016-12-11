@@ -1,0 +1,32 @@
+#define MAX_TREE_SIZE 100
+typedef int ElemType;
+
+//双亲表示法 
+typedef struct PTNode{
+	ElemType data;
+	int parent;
+}PTNode;
+typedef struct{
+    PTNode nodes[MAX_TREE_SIZE];
+    int r,n;//根的位置和结点数 
+}PTree;
+
+//孩子表示法
+typedef struct CTNode{
+	int child;
+	struct CTNode *next;
+}*ChildPtr;
+typedef struct{
+	ElemType data;
+	ChildPtr firstchild;
+}CTBox;
+typedef struct{
+	CTBox nodes[MAX_TREE_SIZE];
+	int r,n;
+}CTree;
+
+//孩子兄弟表示法
+typedef struct CSNode{
+	ElemType data;
+	struct CSNode *firstchild,*rightsib;
+}CSNode,*CSTree; 

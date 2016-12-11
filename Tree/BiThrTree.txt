@@ -1,0 +1,26 @@
+typedef enum {Link,Thread} PointerTag;
+typedef struct BiThrNode{
+	ElemType data;
+	struct BiThrNode *lchild,*rchild;
+	PointerTag LTag;
+	PointerTag RTag;
+}BiThrNode,*BiThrTree;
+
+//中序遍历线索化的递归函数
+BiThree pre;
+void InThreading(BiThrTree p){
+	if(p){
+		InThreading(p -> lchild);
+		if(!p -> lchild){
+			p -> LTag = Thread;
+			p -> lchild = pre;
+		}
+		if(!pre -> rchild){
+			pre -> RTag = Thread;
+			pre -> rchild = p;
+		}
+		pre = p;
+		InThreading(p -> rchild);
+		
+	}
+} 
